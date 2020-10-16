@@ -27,8 +27,7 @@ class Inscricao < ApplicationRecord
                 inscrito.delete
                 return true
             end
-            erros[:token] = Array.new()
-            erros[:token] << "Token de desinscrição inválido"
+            erros[:token] = [ "Token de desinscrição inválido" ]
             return false
         end
     end

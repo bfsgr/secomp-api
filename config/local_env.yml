@@ -1,0 +1,6 @@
+HOST: localhost:3000
+USUARIO: example
+SENHA_APP: example
+DOMINIO_EMAIL: example.com
+EMAIL_FROM: example@example.com
+EMAIL_NOME: SECOMP - API 
