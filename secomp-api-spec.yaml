@@ -1,0 +1,152 @@
+openapi: 3.0.3
+info:
+  title: SECOMP-API
+  version: 0.3.1
+  description: API de inscrições para a 5° edição da SECOMP
+  contact:
+    name: Pet Informática
+    url: https://github.com/bfsgr/secomp-api
+    email: pet@din.uem.br
+servers:
+  - url: http://localhost:3000
+    description: Instância local
+paths:
+  /inscricao:
+    post:
+      tags:
+        - inscrição
+      operationId: novaInscricao
+      summary: Cria uma nova incrição na SECOMP
+      description: Guarda os dados do inscrito no banco e o inscreve no feed da SECOMP
+      requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inscricao'
+      responses:
+        '200':
+          description: OK
+          content:
+             application/json:
+              schema:
+                $ref: '#/components/schemas/resultado'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/resultado'
+  /desinscreve:
+   delete:
+    operationId: removeInscricao
+    summary: Remove uma inscrição da SECOMP
+    description: Remove os dados do inscrito no banco e o desinscreve do feed da SECOMP
+    tags:
+      - inscrição
+    parameters:
+      - in: query
+        name: id
+        description: ID da inscrição
+        required: true
+        schema:
+          type: number
+          minimum: 1
+      - in: query
+        name: token
+        schema:
+          type: string
+        description: Base64 string
+        required: true
+    responses:
+            '200':
+              description: OK
+              content:
+                 application/json:
+                  schema:
+                    $ref: '#/components/schemas/resultado'
+            '400':
+              description: Bad Request
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/resultado'
+                
+components:
+  schemas:
+    resultado:
+      type: object
+      properties:
+        status:
+          type: number
+          description: código HTML da operação
+          example: 200
+        erros:
+          type: object
+          properties:
+            nome:
+              type: array
+              items:
+                type: string
+                description: Descrição de erro no campo de nome
+                example: Nome não pode estar em branco
+            email:
+              type: array
+              items:
+                type: string
+                description: Descrição de erro no campo de email
+                example: Email inválido
+            cpf:
+              type: array
+              items:
+                type: string
+                description: Descrição de erro no campo de CPF
+                example: CPF inválido
+            telefone:
+              type: array
+              items:
+                type: string
+                description: Descrição de erro no campo de telefone
+                example: Telefone inválido
+            ra:
+              type: array
+              items:
+                type: string
+                description: Descrição de erro no campo de ra
+                example: O RA deve ter 8 dígitos
+            token:
+              type: array
+              items:
+                type: string
+                description: Descrição de erro no campo de token 
+                example: Token de desincrição inválido
+      required:
+        - status
+    inscricao:
+      type: object
+      properties:
+        nome:
+          type: string
+          description: Nome completo do inscrito
+          example: João da Silva
+        email:
+          type: string
+          description: Endereço de e-mail do inscrito
+          example: example@example.com
+        telefone:
+          type: string
+          description: Número de telefone do inscrito
+          example: "(44) 97999-5861"
+        cpf:
+          type: string
+          description: Número de CPF do inscrito
+          example: 739.366.869-63
+        ra:
+          type: string
+          description: Número RA do inscrito, se for acadêmico da UEM
+          example: "118899"
+      required:
+        - nome
+        - email
+        - telefone
+        - cpf
