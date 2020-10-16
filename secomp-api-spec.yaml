@@ -11,7 +11,7 @@ servers:
   - url: http://localhost:3000
     description: Instância local
 paths:
-  /inscricao:
+  /inscreve:
     post:
       tags:
         - inscrição
