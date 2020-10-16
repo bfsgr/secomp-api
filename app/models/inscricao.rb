@@ -9,30 +9,40 @@ class CPFValidator < ActiveModel::Validator
   end
 
 class Inscricao < ApplicationRecord
-
+    # antes de criar uma nova inscrição crie uma string base64 para remoção
     before_create :gen_unsubscribe_token
 
+    # valida nome, ra e email
     validates :nome, :presence => true, :length => { :in => 1..255 }
     validates :ra, :length => { is: 6 }, :allow_blank => true
     validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }
+    # valida o campo de CPF usando a gem cpf_cnpj
     validates_with CPFValidator, fields: [:cpf]
-
+    # normaliza o número de telefone, assumindo +55
     phony_normalize :telefone, default_country_code: 'BR'
+    # validada o número de telefone normalizado
     validates :telefone, :phony_plausible => { :message => "Telefone inválido"}
 
+    # função de desinscrição
     def self.unsubscribe(request, erros)
+        # busca no banco o usuário com o ID
         inscrito = self.find(request[:id])
+        # verificação desnecessária? se o id não existir a chamada anterior retorna 404
         if not inscrito.nil? 
+            # se o token na query for igual ao do banco, remova o inscrito
             if inscrito.unsubscribe_token == request[:token]
                 inscrito.delete
                 return true
             end
+            # caso contrátio gere uma mensagem de erro no token e retorne false
             erros[:token] = [ "Token de desinscrição inválido" ]
             return false
         end
     end
 
+
     private
+    # crie o token base64 do usuário
     def gen_unsubscribe_token
         self.unsubscribe_token = SecureRandom.urlsafe_base64.to_s
     end
