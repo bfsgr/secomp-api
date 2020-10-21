@@ -15,9 +15,10 @@ class Inscricao < ApplicationRecord
     # valida nome, ra e email
     validates :nome, :presence => true, :length => { :in => 1..255 }
     validates :ra, :length => { is: 6 }, :allow_blank => true
-    validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }
+    validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, uniqueness: true
     # valida o campo de CPF usando a gem cpf_cnpj
     validates_with CPFValidator, fields: [:cpf]
+    validates :cpf, uniqueness: true
     # normaliza o número de telefone, assumindo +55
     phony_normalize :telefone, default_country_code: 'BR'
     # validada o número de telefone normalizado
