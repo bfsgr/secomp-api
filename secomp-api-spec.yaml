@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: SECOMP-API
-  version: 0.3.1
+  version: 0.4.0
   description: API de inscrições para a 5° edição da SECOMP
   contact:
     name: Pet Informática
@@ -14,7 +14,7 @@ paths:
   /inscreve:
     post:
       tags:
-        - inscrição
+        - Inscrição
       operationId: novaInscricao
       summary: Cria uma nova incrição na SECOMP
       description: Guarda os dados do inscrito no banco e o inscreve no feed da SECOMP
@@ -43,7 +43,7 @@ paths:
     summary: Remove uma inscrição da SECOMP
     description: Remove os dados do inscrito no banco e o desinscreve do feed da SECOMP
     tags:
-      - inscrição
+      - Inscrição
     parameters:
       - in: query
         name: id
@@ -71,6 +71,42 @@ paths:
                 application/json:
                   schema:
                     $ref: '#/components/schemas/resultado'
+  /petmaster/auth:
+    post:
+      operationId: masterAuth
+      summaty: Autenticação do PET-MASTER
+      description: Retorna um JWT para ser usado nas operações de PET Master
+      tags:
+        - Pet Master
+      requestBody:
+        required: true
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  description: senha PET master 
+                  example: petmaster
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  auth_token:
+                    type: string
+                    description: chave JWT 
+                    example: aaaa.bbbb.cccc
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/resultado'
                 
 components:
   schemas:
@@ -120,6 +156,12 @@ components:
                 type: string
                 description: Descrição de erro no campo de token 
                 example: Token de desincrição inválido
+            auth_token:
+              type: array
+              items:
+                type: string
+                description: Erros no processamento de JWT
+                example: Token de autorização inválido
       required:
         - status
     inscricao:
