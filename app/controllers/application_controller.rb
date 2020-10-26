@@ -7,7 +7,6 @@ class ApplicationController < ActionController::API
             render json: { errors: ['Not Authenticated'] }, status: :unauthorized
             return
         end
-        @logged = true
         rescue JWT::VerificationError, JWT::DecodeError
             render json: { errors: ['Not Authenticated'] }, status: :unauthorized
     end

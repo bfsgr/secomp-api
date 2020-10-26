@@ -29,3 +29,6 @@
 /config/master.key
 # /config/local_env.yml
 .vscode
+/config/credentials/production.key
+
+/config/credentials/development.key
