@@ -6,8 +6,22 @@ class MasterController < ApplicationController
         if process_pass(params[:password])
           render json: payload(MASTER)
         else
-          render json: {errors: ['Invalid Password']}, status: :unauthorized
+          render json: { status: 401 , erros: ['Invalid Password']}, status: :unauthorized
         end
+    end
+
+
+    def list
+      inscritos = Inscricao.select(:id, :nome, :email ,:cpf, :ra) 
+      render json: inscritos, status: :ok
+    end
+
+    def get_inscrito
+      inscrito = Inscricao.find(params[:id])
+      render json: inscrito, status: :ok
+      rescue ActiveRecord::RecordNotFound, ActiveRecord::StatementInvalid
+        render 'inscrito/erro404', status: :not_found, format: :jbuilder, controller: 'inscrito'
+        
     end
 
     
@@ -17,6 +31,7 @@ class MasterController < ApplicationController
     def payload(user)
         return nil unless user and user[:id]
         {
+          status: 200,
           auth_token: JsonWebToken.encode({user_id: user[:id]})
         }
     end
