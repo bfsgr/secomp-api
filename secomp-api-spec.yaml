@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: SECOMP-API
-  version: 0.4.0
+  version: 0.5.0
   description: API de inscrições para a 5° edição da SECOMP
   contact:
     name: Pet Informática
@@ -10,8 +10,10 @@ info:
 servers:
   - url: http://localhost:3000
     description: Instância local
+  - url: https://secomp-api-test.herokuapp.com/
+    description: Instância heroku
 paths:
-  /inscreve:
+  /api/inscreve:
     post:
       tags:
         - Inscrição
@@ -19,78 +21,78 @@ paths:
       summary: Cria uma nova incrição na SECOMP
       description: Guarda os dados do inscrito no banco e o inscreve no feed da SECOMP
       requestBody:
-          required: true
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/inscricao"
+      responses:
+        "200":
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inscricao'
-      responses:
-        '200':
-          description: OK
-          content:
-             application/json:
-              schema:
-                $ref: '#/components/schemas/resultado'
-        '400':
+                $ref: "#/components/schemas/resultado"
+        "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/resultado'
-  /desinscreve:
-   delete:
-    operationId: removeInscricao
-    summary: Remove uma inscrição da SECOMP
-    description: Remove os dados do inscrito no banco e o desinscreve do feed da SECOMP
-    tags:
-      - Inscrição
-    parameters:
-      - in: query
-        name: id
-        description: ID da inscrição
-        required: true
-        schema:
-          type: number
-          minimum: 1
-      - in: query
-        name: token
-        schema:
-          type: string
-        description: Base64 string
-        required: true
-    responses:
-            '200':
-              description: OK
-              content:
-                 application/json:
-                  schema:
-                    $ref: '#/components/schemas/resultado'
-            '400':
-              description: Bad Request
-              content:
-                application/json:
-                  schema:
-                    $ref: '#/components/schemas/resultado'
-  /petmaster/auth:
+                $ref: "#/components/schemas/resultado"
+  /api/desinscreve:
+    delete:
+      operationId: removeInscricao
+      summary: Remove uma inscrição da SECOMP
+      description: Remove os dados do inscrito no banco e o desinscreve do feed da SECOMP
+      tags:
+        - Inscrição
+      parameters:
+        - in: query
+          name: id
+          description: ID da inscrição
+          required: true
+          schema:
+            type: number
+            minimum: 1
+        - in: query
+          name: token
+          schema:
+            type: string
+          description: Base64 string
+          required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/resultado"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/resultado"
+  /api/auth:
     post:
       operationId: masterAuth
-      summaty: Autenticação do PET-MASTER
+      summary: Autenticação do PET-MASTER
       description: Retorna um JWT para ser usado nas operações de PET Master
       tags:
-        - Pet Master
+        - Organização
       requestBody:
         required: true
-        content: 
+        content:
           application/json:
             schema:
               type: object
               properties:
                 password:
                   type: string
-                  description: senha PET master 
+                  description: senha PET master
                   example: petmaster
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
@@ -99,16 +101,73 @@ paths:
                 properties:
                   auth_token:
                     type: string
-                    description: chave JWT 
+                    description: chave JWT
                     example: aaaa.bbbb.cccc
-        '401':
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/resultado'
-                
+                $ref: "#/components/schemas/resultado"
+  /api/list:
+    get:
+      operationId: masterList
+      summary: Lista todos os inscritos
+      description: Lista todos os inscritos com todoss os seus dados exceto unsubscribe_token
+      tags:
+        - Organização
+      security:
+        - petJWT: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/inscritos"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/resultado"
+  /api/inscrito/{id}:
+    get:
+      operationId: masterDetails
+      summary: Lista os detalhes do inscrito id
+      description: Lista os campos do modelo de inscrito com a chave primária ID
+      tags:
+        - Organização
+      security:
+        - petJWT: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID do inscrito
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/inscritos"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/resultado"
+
 components:
+  securitySchemes:
+    petJWT:
+      type: http
+      scheme: bearer
+      bearerFormat: jwt
+
   schemas:
     resultado:
       type: object
@@ -138,24 +197,18 @@ components:
                 type: string
                 description: Descrição de erro no campo de CPF
                 example: CPF inválido
-            telefone:
-              type: array
-              items:
-                type: string
-                description: Descrição de erro no campo de telefone
-                example: Telefone inválido
             ra:
               type: array
               items:
                 type: string
                 description: Descrição de erro no campo de ra
                 example: O RA deve ter 8 dígitos
-            token:
+            desinscrição:
               type: array
               items:
                 type: string
-                description: Descrição de erro no campo de token 
-                example: Token de desincrição inválido
+                description: Descrição de erro no campo de token
+                example: Token de desinscrição inválido
             auth_token:
               type: array
               items:
@@ -175,10 +228,6 @@ components:
           type: string
           description: Endereço de e-mail do inscrito
           example: example@example.com
-        telefone:
-          type: string
-          description: Número de telefone do inscrito
-          example: "(44) 97999-5861"
         cpf:
           type: string
           description: Número de CPF do inscrito
@@ -190,5 +239,29 @@ components:
       required:
         - nome
         - email
-        - telefone
         - cpf
+    inscritos:
+      type: array
+      items:
+        name: inscrito
+        type: object
+        properties:
+          id:
+            description: ID do inscrito
+            example: 1
+          nome:
+            type: string
+            description: Nome completo do inscrito
+            example: João da Silva
+          email:
+            type: string
+            description: Endereço de e-mail do inscrito
+            example: example@example.com
+          cpf:
+            type: string
+            description: Número de CPF do inscrito
+            example: 739.366.869-63
+          ra:
+            type: string
+            description: Número RA do inscrito, se for acadêmico da UEM
+            example: "118899"

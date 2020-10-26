@@ -4,11 +4,11 @@ class ApplicationController < ActionController::API
     protected
     def authenticate_request!
         unless user_id_in_token?
-            render json: { errors: ['Not Authenticated'] }, status: :unauthorized
+            render "inscrito/erro401", status: :unauthorized, format: :jbuilder
             return
         end
         rescue JWT::VerificationError, JWT::DecodeError
-            render json: { errors: ['Not Authenticated'] }, status: :unauthorized
+            render json: "inscrito/erro401", status: :unauthorized, format: :jbuilder
     end
     
     private
