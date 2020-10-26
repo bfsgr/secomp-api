@@ -15,7 +15,6 @@ ActiveRecord::Schema.define(version: 2020_10_16_021249) do
   create_table "inscricaos", force: :cascade do |t|
     t.string "nome"
     t.string "email"
-    t.string "telefone"
     t.string "cpf"
     t.string "ra"
     t.string "unsubscribe_token"
