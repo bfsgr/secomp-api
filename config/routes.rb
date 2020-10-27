@@ -8,4 +8,7 @@ Rails.application.routes.draw do
   get '/api/inscrito/:id', to: 'master#get_inscrito'
 
   get '/api/list', to: 'master#list'
+
+  delete '/api/remove/:id', to: 'master#remove'
+
 end

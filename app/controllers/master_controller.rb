@@ -24,6 +24,13 @@ class MasterController < ApplicationController
         
     end
 
+    def remove
+      Inscricao.delete(params[:id])
+      render json: { status: 200 }, status: :ok
+      rescue ActiveRecord::RecordNotFound, ActiveRecord::StatementInvalid
+        render 'inscrito/erro404', status: :not_found, format: :jbuilder, controller: 'inscrito'
+    end
+
     
     private
     MASTER = { id: 245, salt: ENV.fetch('PET_MASTER_SALT') , password: ENV.fetch("PET_MASTER_EPASS") }.freeze
