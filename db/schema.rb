@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_16_021249) do
+ActiveRecord::Schema.define(version: 2020_10_31_153646) do
 
   create_table "inscricaos", force: :cascade do |t|
     t.string "nome"
@@ -18,6 +18,7 @@ ActiveRecord::Schema.define(version: 2020_10_16_021249) do
     t.string "cpf"
     t.string "ra"
     t.string "unsubscribe_token"
+    t.string "campeonatos"
   end
 
 end
