@@ -1,3 +1,4 @@
+CAMPEONATOS = ["LOL", "Valorant", "CS"].freeze
 
 class CPFValidator < ActiveModel::Validator
     def validate(record)
@@ -7,6 +8,22 @@ class CPFValidator < ActiveModel::Validator
         end
     end
   end
+
+  class CampeonatoValidator < ActiveModel::Validator
+    def validate(record)
+        if options[:fields].any? 
+            array = record.send(options[:fields].first)
+            if array 
+                aux = JSON.parse(array)
+                aux.each do |game|
+                    if not (CAMPEONATOS.include? game)
+                        record.errors[:campeonatos] << "Jogo inválido"
+                    end
+                end
+            end
+        end
+    end
+end
 
 class Inscricao < ApplicationRecord
     # antes de criar uma nova inscrição crie uma string base64 para remoção
@@ -19,6 +36,7 @@ class Inscricao < ApplicationRecord
     # valida o campo de CPF usando a gem cpf_cnpj
     validates_with CPFValidator, fields: [:cpf]
     validates :cpf, uniqueness: true
+    validates_with CampeonatoValidator, fields: [:campeonatos]
 
     # função de desinscrição
     def self.unsubscribe(request, erros)
