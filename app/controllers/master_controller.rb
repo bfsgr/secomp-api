@@ -31,6 +31,10 @@ class MasterController < ApplicationController
         render 'inscrito/erro404', status: :not_found, format: :jbuilder, controller: 'inscrito'
     end
 
+    def mailer
+      render json: { status: 200 }, status: :ok
+    end
+
     
     private
     MASTER = { id: 245, salt: ENV.fetch('PET_MASTER_SALT') , password: ENV.fetch("PET_MASTER_EPASS") }.freeze

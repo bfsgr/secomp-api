@@ -11,4 +11,6 @@ Rails.application.routes.draw do
 
   delete '/api/remove/:id', to: 'master#remove'
 
+  put '/api/mail', to: 'master#mailer'
+
 end
