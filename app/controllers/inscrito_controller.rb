@@ -32,6 +32,6 @@ class InscritoController < ApplicationController
     private
     # permita os argumentos de inscrição da payload
     def validade_args
-        params.require(:inscrito).permit(:nome, :email, :cpf, :ra, :campeonatos => [])
+        params.require(:inscrito).permit(:nome, :email, :cpf, :ra)
     end
 end

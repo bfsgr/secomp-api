@@ -12,7 +12,7 @@ class MasterController < ApplicationController
 
 
     def list
-      inscritos = Inscricao.select(:id, :nome, :email ,:cpf, :ra, :campeonatos) 
+      inscritos = Inscricao.select(:id, :nome, :email ,:cpf, :ra) 
       render json: inscritos, status: :ok
     end
 
