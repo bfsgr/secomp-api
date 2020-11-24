@@ -10,7 +10,4 @@ Rails.application.routes.draw do
   get '/api/list', to: 'master#list'
 
   delete '/api/remove/:id', to: 'master#remove'
-
-  put '/api/mail', to: 'master#mailer'
-
 end
